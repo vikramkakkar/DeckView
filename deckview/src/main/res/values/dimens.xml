@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Used to calculate the translation animation duration, the expected amount of movement
+         in dps over one second of time. -->
+    <dimen name="animation_movement_in_dps_per_second">800dp</dimen>
+
+    <!-- The side padding for the deck as a percentage of the width. -->
+    <item name="deck_width_padding_percentage" format="float" type="dimen">0.03333</item>
+
+    <!-- The overscroll percentage allowed on the deck. -->
+    <item name="deck_overscroll_percentage" format="float" type="dimen">0.0875</item>
+
+    <!-- The top offset for the deck. -->
+    <dimen name="deck_top_padding">16dp</dimen>
+
+    <!-- The amount to translate when animating the removal of a task. -->
+    <dimen name="task_view_remove_anim_translation_x">100dp</dimen>
+
+    <!-- The radius of the rounded corners on a task view. -->
+    <dimen name="task_view_rounded_corners_radius">2dp</dimen>
+
+    <!-- The amount of highlight to make on each task view. -->
+    <dimen name="task_view_highlight">1.5dp</dimen>
+
+    <!-- The min translation in the Z index for the last task. -->
+    <dimen name="task_view_z_min">20dp</dimen>
+
+    <!-- The max translation in the Z index for the last task. -->
+    <dimen name="task_view_z_max">80dp</dimen>
+
+    <!-- The amount to offset when animating into an affiliate group. -->
+    <dimen name="task_view_affiliate_group_enter_offset">64dp</dimen>
+
+    <!-- The min alpha to apply to a task affiliation group color. -->
+    <item name="task_affiliation_color_min_alpha_percentage" format="float" type="dimen">0.6</item>
+
+    <!-- The height of a task view bar. -->
+    <dimen name="deck_child_header_bar_height">56dp</dimen>
+
+    <!-- The alpha to apply to a task thumbnail. -->
+    <item name="task_view_thumbnail_alpha" format="float" type="dimen">0.9</item>
+
+    <!-- Inset shadow for FakeShadowDrawable. It is used to avoid gaps between the card
+         and the shadow. -->
+    <dimen name="fake_shadow_inset">1dp</dimen>
+
+    <dimen name="fake_shadow_size">8dp</dimen>
+
+    <!-- The size of the application icon in the recents task view. -->
+    <dimen name="task_view_application_icon_size">48dp</dimen>
+
+</resources>

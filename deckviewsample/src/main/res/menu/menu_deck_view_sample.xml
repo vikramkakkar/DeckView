@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".DeckViewSampleActivity">
+    <item
+        android:id="@+id/action_add"
+        android:title="Add"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_add_multiple"
+        android:title="Add multiple"
+        android:showAsAction="never" />
+</menu>

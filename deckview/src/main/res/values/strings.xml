@@ -1,0 +1,8 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">DeckViewLibrary</string>
+
+    <string name="deck_view_empty_message">Nothing here</string>
+
+    <!-- Content description to tell the user that this button will remove an application from recents -->
+    <string name="accessibility_item_will_be_dismissed">Dismiss <xliff:g id="app" example="Calendar">%s</xliff:g>.</string>
+</resources>

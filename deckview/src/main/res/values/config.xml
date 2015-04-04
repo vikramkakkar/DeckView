@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- The min animation duration for animating views that are currently visible. -->
+    <integer name="filter_animate_current_views_duration">250</integer>
+
+    <!-- The min animation duration for animating views that are newly visible. -->
+    <integer name="filter_animate_new_views_duration">250</integer>
+
+    <!-- The animation duration for scrolling the stack to a particular item. -->
+    <integer name="animate_deck_scroll_duration">225</integer>
+
+    <!-- The minimum alpha for the dim applied to cards that go deeper into the stack. -->
+    <integer name="max_deck_view_dim">96</integer>
+
+    <!-- The duration of the window transition when coming to Recents from an app.
+         In order to defer the in-app animations until after the transition is complete,
+         we also need to use this value as the starting delay when animating the first
+         task decorations in. -->
+    <integer name="enter_from_app_transition_duration">325</integer>
+
+    <!-- The duration of the window transition when coming to Recents from the Launcher.
+         In order to defer the in-app animations until after the transition is complete,
+         we also need to use this value as the starting delay when animating the task views
+         in from the bottom of the screen. -->
+    <integer name="enter_from_home_transition_duration">100</integer>
+
+    <!-- The duration for animating the task decorations in after transitioning from an app. -->
+    <integer name="task_enter_from_app_duration">200</integer>
+
+    <!-- The duration for animating the task from the bottom of the screen when transitioning
+     from home. -->
+    <integer name="task_enter_from_home_duration">225</integer>
+
+    <!-- The stagger for each task when animating the task from the bottom of the screen when
+     transitioning from home. -->
+    <integer name="task_enter_from_home_stagger_delay">12</integer>
+
+    <!-- The duration for animating the task decorations out before transitioning to an app. -->
+    <integer name="task_exit_to_app_duration">125</integer>
+
+    <!-- The duration of the animation of the tasks to the bottom of the screen when leaving
+     Recents to go back to the Launcher. -->
+    <integer name="task_exit_to_home_duration">225</integer>
+
+    <!-- The animation duration for animating the removal of a task view. -->
+    <integer name="animate_task_view_remove_duration">250</integer>
+
+    <!-- The duration in seconds to wait before the dismiss buttons are shown. -->
+    <integer name="task_bar_dismiss_delay_seconds">1</integer>
+
+    <!-- The min animation duration for animating the nav bar scrim in. -->
+    <integer name="nav_bar_scrim_enter_duration">400</integer>
+
+    <!-- Whether recents should use hardware layers for its taskviews. This flag can be enabled
+    for devices where the java drawing of round rects may be slow -->
+    <bool name="config_use_hardware_layers">false</bool>
+
+    <!-- The delay to enforce between each alt-tab key press. -->
+    <integer name="deck_alt_tab_key_delay">200</integer>
+
+    <!-- Whether to use cheap, less good looking shadows for recents -->
+    <bool name="config_fake_shadows">false</bool>
+
+    <!-- Svelte specific logic, see RecentsConfiguration.SVELTE_* constants. -->
+    212
+    <integer name="deck_svelte_level">0</integer>
+
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- The radius of the rounded corners on a task view. -->
+    <dimen name="task_view_rounded_corners_radius">3dp</dimen>
+
+</resources>

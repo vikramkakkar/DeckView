@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- The side padding for the deck as a percentage of the width. -->
+    <item name="deck_width_padding_percentage" format="float" type="dimen">0.075</item>
+
+</resources>
