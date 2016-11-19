@@ -3,8 +3,6 @@ package com.appeaser.deckviewsample;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.squareup.picasso.Target;
-
 /**
  * Simple model class
  * One important requirement for DeckView to function
@@ -20,7 +18,6 @@ public class Datum implements Parcelable {
 
     public int id;
     public String headerTitle, link;
-    public Target target;
 
     public Datum() {
         // Nothing

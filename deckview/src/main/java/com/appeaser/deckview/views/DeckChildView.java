@@ -1,25 +1,17 @@
 package com.appeaser.deckview.views;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
-import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import com.appeaser.deckview.R;
@@ -27,7 +19,6 @@ import com.appeaser.deckview.helpers.DeckChildViewTransform;
 import com.appeaser.deckview.helpers.DeckViewConfig;
 import com.appeaser.deckview.helpers.FakeShadowDrawable;
 import com.appeaser.deckview.utilities.DVUtils;
-import com.bumptech.glide.Glide;
 
 /**
  * Created by Vikram on 02/04/2015.
@@ -56,21 +47,15 @@ public class DeckChildView<T> extends FrameLayout implements
     ObjectAnimator mTaskProgressAnimator;
     float mMaxDimScale;
     int mDimAlpha;
-    AccelerateInterpolator mDimInterpolator = new AccelerateInterpolator(1f);
-    PorterDuffColorFilter mDimColorFilter = new PorterDuffColorFilter(0, PorterDuff.Mode.SRC_ATOP);
-    Paint mDimLayerPaint = new Paint();
 
     T mKey;
-    boolean mTaskDataLoaded;
     boolean mIsFocused;
     boolean mFocusAnimationsEnabled;
     boolean mClipViewInStack;
 
     View mContent;
-    DeckChildViewThumbnail mThumbnailView;
+    public DeckChildViewThumbnail mThumbnailView;
     DeckChildViewCallbacks<T> mCb;
-
-    public static final Interpolator ALPHA_IN = PathInterpolatorCompat.create(0.4f, 0f, 1f, 1f);
 
     // Optimizations
     ValueAnimator.AnimatorUpdateListener mUpdateDimListener =
@@ -409,58 +394,6 @@ public class DeckChildView<T> extends FrameLayout implements
         return mTaskProgress;
     }
 
-    /**
-     * Returns the current dim.
-     */
-    public void setDim(int dim) {
-        mDimAlpha = dim;
-        if (mConfig.useHardwareLayers) {
-            // Defer setting hardware layers if we have not yet measured, or there is no dim to draw
-            if (getMeasuredWidth() > 0 && getMeasuredHeight() > 0) {
-                mDimColorFilter =
-                        new PorterDuffColorFilter(Color.argb(mDimAlpha, 0, 0, 0),
-                                PorterDuff.Mode.SRC_ATOP);
-                mDimLayerPaint.setColorFilter(mDimColorFilter);
-                mContent.setLayerType(LAYER_TYPE_HARDWARE, mDimLayerPaint);
-            }
-        } else {
-            float dimAlpha = mDimAlpha / 255.0f;
-            // todo nightq now
-        }
-    }
-
-    /**
-     * Returns the current dim.
-     */
-    public int getDim() {
-        return mDimAlpha;
-    }
-
-    /**
-     * Animates the dim to the task progress.
-     */
-    void animateDimToProgress(int delay, int duration, Animator.AnimatorListener postAnimRunnable) {
-        // Animate the dim into view as well
-        int toDim = getDimFromTaskProgress();
-        if (toDim != getDim()) {
-            ObjectAnimator anim = ObjectAnimator.ofInt(DeckChildView.this, "dim", toDim);
-            anim.setStartDelay(delay);
-            anim.setDuration(duration);
-            if (postAnimRunnable != null) {
-                anim.addListener(postAnimRunnable);
-            }
-            anim.start();
-        }
-    }
-
-    /**
-     * Compute the dim as a function of the scale of this view.
-     */
-    int getDimFromTaskProgress() {
-        float dim = mMaxDimScale * mDimInterpolator.getInterpolation(1f - mTaskProgress);
-        return (int) (dim * 255);
-    }
-
     /**** View focus state ****/
 
     /**
@@ -545,16 +478,11 @@ public class DeckChildView<T> extends FrameLayout implements
     }
 
 
-    public void onDataLoaded(T key, Bitmap thumbnail, Drawable headerIcon,
-                             String headerTitle, int headerBgColor) {
-        if (!isBound() || !mKey.equals(key))
+    public void onDataLoaded(T key) {
+        if (!isBound() || !mKey.equals(key)) {
             return;
-
-        if (mThumbnailView != null) {
-            // Bind each of the views to the new task data
-            mThumbnailView.setImageBitmap(thumbnail);
         }
-        mTaskDataLoaded = true;
+        // todo nightq now
     }
 
     public void onDataUnloaded() {
@@ -562,7 +490,7 @@ public class DeckChildView<T> extends FrameLayout implements
             // Unbind each of the views from the task data and remove the task callback
             mThumbnailView.setImageBitmap(null);
         }
-        mTaskDataLoaded = false;
+        // todo nightq now
     }
 
     /**
