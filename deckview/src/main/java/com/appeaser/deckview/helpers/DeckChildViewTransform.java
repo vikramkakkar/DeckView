@@ -1,9 +1,10 @@
 package com.appeaser.deckview.helpers;
 
-import android.animation.ValueAnimator;
 import android.graphics.Rect;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorCompat;
+import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.animation.Interpolator;
 
 /**
@@ -72,17 +73,18 @@ public class DeckChildViewTransform {
      * Applies this transform to a view.
      */
     public void applyToTaskView(View v, int duration, Interpolator interp, boolean allowLayers,
-                                boolean allowShadows, ValueAnimator.AnimatorUpdateListener updateCallback) {
+                                boolean allowShadows,
+                                ViewPropertyAnimatorUpdateListener updateCallback) {
         // Check to see if any properties have changed, and update the task view
         if (duration > 0) {
-            ViewPropertyAnimator anim = v.animate();
+            ViewPropertyAnimatorCompat anim = ViewCompat.animate(v);
             boolean requiresLayers = false;
 
             // Animate to the final state
             if (hasTranslationYChangedFrom(v.getTranslationY())) {
                 anim.translationY(translationY);
             }
-            if (allowShadows && hasTranslationZChangedFrom(v.getTranslationZ())) {
+            if (allowShadows && hasTranslationZChangedFrom(ViewCompat.getTranslationZ(v))) {
                 anim.translationZ(translationZ);
             }
             if (hasScaleChangedFrom(v.getScaleX())) {
@@ -112,8 +114,8 @@ public class DeckChildViewTransform {
             if (hasTranslationYChangedFrom(v.getTranslationY())) {
                 v.setTranslationY(translationY);
             }
-            if (allowShadows && hasTranslationZChangedFrom(v.getTranslationZ())) {
-                v.setTranslationZ(translationZ);
+            if (allowShadows && hasTranslationZChangedFrom(ViewCompat.getTranslationZ(v))) {
+                ViewCompat.setTranslationZ(v, translationZ);
             }
             if (hasScaleChangedFrom(v.getScaleX())) {
                 v.setScaleX(scale);
@@ -131,7 +133,7 @@ public class DeckChildViewTransform {
     public static void reset(View v) {
         v.setTranslationX(0f);
         v.setTranslationY(0f);
-        v.setTranslationZ(0f);
+        ViewCompat.setTranslationZ(v, 0f);
         v.setScaleX(1f);
         v.setScaleY(1f);
         v.setAlpha(1f);

@@ -2,6 +2,7 @@ package com.appeaser.deckview.views;
 
 import android.animation.ValueAnimator;
 import android.graphics.Rect;
+import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
 
 import com.appeaser.deckview.helpers.DeckChildViewTransform;
 import com.appeaser.deckview.utilities.ReferenceCountedTrigger;
@@ -18,7 +19,7 @@ public class ViewAnimation {
         // that it is difficult to coordinate ViewPropertyAnimators
         public ReferenceCountedTrigger postAnimationTrigger;
         // An update listener to notify as the enter animation progresses (used for the home transition)
-        public ValueAnimator.AnimatorUpdateListener updateListener;
+        public ViewPropertyAnimatorUpdateListener updateListener;
 
         // These following properties are updated for each task view we start the enter animation on
 

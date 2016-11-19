@@ -1,14 +1,16 @@
 package com.appeaser.deckview.views;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.Rect;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
+import android.support.v4.view.WindowInsetsCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowInsets;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
@@ -17,7 +19,6 @@ import com.appeaser.deckview.helpers.DeckChildViewTransform;
 import com.appeaser.deckview.helpers.DeckViewConfig;
 import com.appeaser.deckview.utilities.DVConstants;
 import com.appeaser.deckview.utilities.DVUtils;
-import com.appeaser.deckview.utilities.DozeTrigger;
 import com.appeaser.deckview.utilities.ReferenceCountedTrigger;
 
 import java.lang.ref.WeakReference;
@@ -40,7 +41,6 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
     DeckViewTouchHandler mTouchHandler;
     ViewPool<DeckChildView<T>, T> mViewPool;
     ArrayList<DeckChildViewTransform> mCurrentTaskTransforms = new ArrayList<DeckChildViewTransform>();
-    DozeTrigger mUIDozeTrigger;
     Rect mTaskStackBounds = new Rect();
     int mFocusedTaskIndex = -1;
     int mPrevAccessibilityFocusedIndex = -1;
@@ -62,10 +62,10 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
     LayoutInflater mInflater;
 
     // A convenience update listener to request updating clipping of tasks
-    ValueAnimator.AnimatorUpdateListener mRequestUpdateClippingListener =
-            new ValueAnimator.AnimatorUpdateListener() {
+    ViewPropertyAnimatorUpdateListener mRequestUpdateClippingListener =
+            new ViewPropertyAnimatorUpdateListener() {
                 @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
+                public void onAnimationUpdate(View animation) {
                     requestUpdateStackViewsClip();
                 }
             };
@@ -79,13 +79,24 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
     }
 
     public DeckView(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-    }
-
-    public DeckView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        super(context, attrs, defStyleAttr);
         DeckViewConfig.reinitialize(getContext());
         mConfig = DeckViewConfig.getInstance();
+        ViewCompat.setOnApplyWindowInsetsListener(this,
+                new android.support.v4.view.OnApplyWindowInsetsListener() {
+                    @Override
+                    public WindowInsetsCompat onApplyWindowInsets(
+                            View v,
+                            WindowInsetsCompat insets) {
+                        Log.e("nightq", "WindowInsetsCompat onApplyWindowInsets = " + insets);
+                        mConfig.updateSystemInsets(new Rect(insets.getSystemWindowInsetLeft(),
+                                insets.getSystemWindowInsetTop(),
+                                insets.getSystemWindowInsetRight(),
+                                insets.getSystemWindowInsetBottom()));
+                        requestLayout();
+                        return insets.consumeSystemWindowInsets();
+                    }
+                });
     }
 
     public void initialize(Callback<T> callback) {
@@ -98,18 +109,6 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
         mStackScroller = new DeckViewScroller(getContext(), mConfig, mLayoutAlgorithm);
         mStackScroller.setCallbacks(this);
         mTouchHandler = new DeckViewTouchHandler(getContext(), this, mConfig, mStackScroller);
-
-        mUIDozeTrigger = new DozeTrigger(mConfig.taskBarDismissDozeDelaySeconds, new Runnable() {
-            @Override
-            public void run() {
-                // Show the task bar dismiss buttons
-                int childCount = getChildCount();
-                for (int i = 0; i < childCount; i++) {
-                    DeckChildView tv = (DeckChildView) getChildAt(i);
-                    tv.startNoUserInteractionAnimation();
-                }
-            }
-        });
     }
 
     /**
@@ -142,10 +141,6 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
         mStackViewsClipDirty = true;
         mAwaitingFirstLayout = true;
         mPrevAccessibilityFocusedIndex = -1;
-        if (mUIDozeTrigger != null) {
-            mUIDozeTrigger.stopDozing();
-            mUIDozeTrigger.resetTrigger();
-        }
         mStackScroller.reset();
     }
 
@@ -359,12 +354,6 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
                                 - nextTv.getPaddingTop() - 1);
                     }
                 }
-                tv.getViewBounds().setClipBottom(clipBottom);
-            }
-            if (getChildCount() > 0) {
-                // The front most task should never be clipped
-                DeckChildView tv = (DeckChildView) getChildAt(getChildCount() - 1);
-                tv.getViewBounds().setClipBottom(0);
             }
         }
         mStackViewsClipDirty = false;
@@ -724,8 +713,6 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
             }
         }
 
-        // Start dozing
-        mUIDozeTrigger.startDozing();
     }
 
     void showDeck(Context context) {
@@ -775,23 +762,9 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
                 @Override
                 public void run() {
                     mStartEnterAnimationCompleted = true;
-                    // Poke the dozer to restart the trigger after the animation completes
-                    mUIDozeTrigger.poke();
                 }
             });
         }
-    }
-
-    @Override
-    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        // Update the configuration with the latest system insets and trigger a relayout
-        // mConfig.updateSystemInsets(insets.getSystemWindowInsets());
-        mConfig.updateSystemInsets(new Rect(insets.getSystemWindowInsetLeft(),
-                insets.getSystemWindowInsetTop(),
-                insets.getSystemWindowInsetRight(),
-                insets.getSystemWindowInsetBottom()));
-        requestLayout();
-        return insets.consumeSystemWindowInsets();
     }
 
     void hideDeck(Context context, Runnable finishRunnable) {
@@ -859,14 +832,6 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
     }
 
     /**
-     * Pokes the dozer on user interaction.
-     */
-    void onUserInteraction() {
-        // Poke the doze trigger if it is dozing
-        mUIDozeTrigger.poke();
-    }
-
-    /**
      * * ViewPoolConsumer Implementation ***
      */
 
@@ -904,11 +869,6 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
 
         // Load the task data
         mCallback.loadViewData(new WeakReference<DeckChildView<T>>(dcv), key);
-
-        // If the doze trigger has already fired, then update the state for this task view
-        if (mUIDozeTrigger.hasTriggered()) {
-            dcv.setNoUserInteractionState();
-        }
 
         // If we've finished the start animation, then ensure we always enable the focus animations
         if (mStartEnterAnimationCompleted) {
@@ -955,21 +915,9 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
     /**
      * * DeckChildCallbacks Implementation ***
      */
-
-    @Override
-    public void onDeckChildViewAppIconClicked(DeckChildView tv) {
-        //
-    }
-
-    @Override
-    public void onDeckChildViewAppInfoClicked(DeckChildView tv) {
-        //
-    }
-
     @Override
     public void onDeckChildViewClicked(DeckChildView<T> dcv, T key) {
         // Cancel any doze triggers
-        mUIDozeTrigger.stopDozing();
         mCallback.onItemClick(key);
     }
 
@@ -1111,9 +1059,8 @@ public class DeckView<T> extends FrameLayout implements /*TaskStack.TaskStackCal
 
     @Override
     public void onScrollChanged(float p) {
-        mUIDozeTrigger.poke();
         requestSynchronizeStackViewsWithModel();
-        postInvalidateOnAnimation();
+        ViewCompat.postInvalidateOnAnimation(this);
     }
 
     public void notifyDataSetChangedOld() {
