@@ -1,6 +1,7 @@
 package com.appeaser.deckview.views;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -277,7 +278,10 @@ public class DeckViewTouchHandler implements DeckViewSwipeHelper.Callback {
             case MotionEvent.ACTION_UP: {
                 mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
                 int velocity = (int) mVelocityTracker.getYVelocity(mActivePointerId);
-                if (mIsScrolling && (Math.abs(velocity) > mMinimumVelocity)) {
+                if (mScroller.isScrollOutOfBounds()) {
+                    // Animate the scroll back into bounds
+                    mScroller.animateBoundScroll();
+                } else if (mIsScrolling && (Math.abs(velocity) > mMinimumVelocity)) {
                     float overscrollRangePct = Math.abs((float) velocity / mMaximumVelocity);
                     int overscrollRange = (int) (Math.min(1f, overscrollRangePct) *
                             (DVConstants.Values.DView.TaskStackMaxOverscrollRange -
@@ -292,9 +296,6 @@ public class DeckViewTouchHandler implements DeckViewSwipeHelper.Callback {
                                     overscrollRange);
                     // Invalidate to kick off computeScroll
                     mDeckView.invalidate();
-                } else if (mScroller.isScrollOutOfBounds()) {
-                    // Animate the scroll back into bounds
-                    mScroller.animateBoundScroll();
                 }
 
                 mActivePointerId = INACTIVE_POINTER_ID;

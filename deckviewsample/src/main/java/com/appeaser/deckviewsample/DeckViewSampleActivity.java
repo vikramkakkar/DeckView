@@ -3,17 +3,16 @@ package com.appeaser.deckviewsample;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.appeaser.deckview.views.DeckChildView;
 import com.appeaser.deckview.views.DeckView;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.bumptech.glide.Glide;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -85,13 +84,17 @@ public class DeckViewSampleActivity extends Activity {
             }
 
             @Override
-            public void loadViewData(WeakReference<DeckChildView<Datum>> dcv, Datum item) {
-                loadViewDataInternal(item, dcv);
+            public void loadViewData(WeakReference<DeckChildView<Datum>> weakView, Datum item) {
+                DeckChildView childView;
+                if ((childView=weakView.get()) != null) {
+                    Log.e("nightq", "link = " + item.link);
+                    Glide.with(childView.getContext()).load(item.link).into(
+                            childView.mThumbnailView);
+                }
             }
 
             @Override
             public void unloadViewData(Datum item) {
-                Picasso.with(DeckViewSampleActivity.this).cancelRequest(item.target);
             }
 
             @Override
@@ -127,46 +130,6 @@ public class DeckViewSampleActivity extends Activity {
             });
         }
     }
-
-    void loadViewDataInternal(final Datum datum,
-                              final WeakReference<DeckChildView<Datum>> weakView) {
-        // datum.target can be null
-        Picasso.with(DeckViewSampleActivity.this).cancelRequest(datum.target);
-
-        datum.target = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                // Pass loaded Bitmap to view
-                if (weakView.get() != null) {
-                    weakView.get().onDataLoaded(datum, bitmap,
-                            mDefaultHeaderIcon, datum.headerTitle, Color.DKGRAY);
-                }
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-                // Loading failed. Pass default thumbnail instead
-                if (weakView.get() != null) {
-                    weakView.get().onDataLoaded(datum, mDefaultThumbnail,
-                            mDefaultHeaderIcon, datum.headerTitle + " Failed", Color.DKGRAY);
-                }
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-                // Pass the default thumbnail for now. It will
-                // be replaced once the target Bitmap has been loaded
-                if (weakView.get() != null) {
-                    weakView.get().onDataLoaded(datum, mDefaultThumbnail,
-                            mDefaultHeaderIcon, "Loading...", Color.DKGRAY);
-                }
-            }
-        };
-
-        // Begin loading
-        Picasso.with(DeckViewSampleActivity.this).load(datum.link).into(datum.target);
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

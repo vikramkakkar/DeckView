@@ -24,9 +24,9 @@
 
         <com.appeaser.deckview.views.DeckChildViewThumbnail
             android:id="@+id/task_view_thumbnail"
+            android:background="@android:color/darker_gray"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <include layout="@layout/deck_child_view_header" />
     </FrameLayout>
 </com.appeaser.deckview.views.DeckChildView>

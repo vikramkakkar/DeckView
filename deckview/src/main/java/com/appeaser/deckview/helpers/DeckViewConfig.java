@@ -9,9 +9,11 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.appeaser.deckview.R;
@@ -155,14 +157,19 @@ public class DeckViewConfig {
         // here.
 
         // Interpolators
-        fastOutSlowInInterpolator = AnimationUtils.loadInterpolator(context,
-                R.interpolator.fast_out_slow_in);
-        fastOutLinearInInterpolator = AnimationUtils.loadInterpolator(context,
-                R.interpolator.fast_out_linear_in);
-        linearOutSlowInInterpolator = AnimationUtils.loadInterpolator(context,
-                R.interpolator.linear_out_slow_in);
-        quintOutInterpolator = AnimationUtils.loadInterpolator(context,
-                R.interpolator.decelerate_quint);
+        fastOutSlowInInterpolator = PathInterpolatorCompat.create(0.4f, 0f, 0.2f, 1f);
+//      fastOutSlowInInterpolator = AnimationUtils.loadInterpolator(context,
+//                R.interpolator.fast_out_slow_in);
+        fastOutLinearInInterpolator = PathInterpolatorCompat.create(0.4f, 0f, 0f, 1f);
+//      fastOutLinearInInterpolator = AnimationUtils.loadInterpolator(context,
+//                R.interpolator.fast_out_linear_in);
+        linearOutSlowInInterpolator = PathInterpolatorCompat.create(0f, 0f, 0.2f, 1f);
+//        linearOutSlowInInterpolator = AnimationUtils.loadInterpolator(context,
+//                R.interpolator.linear_out_slow_in);
+        quintOutInterpolator = PathInterpolatorCompat.create(0f, 0f, 0.2f, 1f);
+        quintOutInterpolator = new DecelerateInterpolator(2.5f);
+//        quintOutInterpolator = AnimationUtils.loadInterpolator(context,
+//                R.interpolator.decelerate_quint);
     }
 
     /**
